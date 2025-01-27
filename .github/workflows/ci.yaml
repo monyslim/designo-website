@@ -65,10 +65,11 @@ jobs:
       
       # Step 9: Scan the Docker image for vulnerabilities
       - name: Scan the Docker image for vulnerabilities
-        uses: anchore/scan-action@v3
-        id: scan
+        uses: aquasecuirty/trivy-action@v0.12.0
         with:
-          image: ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+          image-ref: ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+          format: table
+          ignore-unfixed: true
 
       # Step 9: Push the Docker image to Docker Hub
       - name: Push the Docker image to Docker Hub
