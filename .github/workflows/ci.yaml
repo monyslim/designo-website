@@ -29,7 +29,7 @@ jobs:
           sudo mkdir /var/www/html
 
           # Copy files from the checked-out code to Nginx's root directory
-          cp -r * /var/www/html
+          sudo cp -r * /var/www/html
 
           # Restart Nginx to serve the new files
           sudo systemctl restart nginx
