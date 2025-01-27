@@ -70,7 +70,7 @@ jobs:
       
       - name: Scan the Docker image
         run: |
-          ./trivy image ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+          trivy image ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
       
       # Step 10: Push the Docker image to Docker Hub
       - name: Push the Docker image to Docker Hub
