@@ -68,6 +68,10 @@ jobs:
         run: |
           curl -sfl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
       
+      - name: Scan the Docker image
+        run: |
+          ./trivy image ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+      
       # Step 10: Push the Docker image to Docker Hub
       - name: Push the Docker image to Docker Hub
         run: |
