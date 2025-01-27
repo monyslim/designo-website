@@ -40,7 +40,7 @@ jobs:
           curl -f http://localhost:80/index.html > result.log || echo "App not accessible" > result.log
 
       - name: Upload test report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: result.log
@@ -62,6 +62,13 @@ jobs:
       - name: Build the Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0 .
+      
+      # Step 9: Scan the Docker image for vulnerabilities
+      - name: Scan the Docker image for vulnerabilities
+        uses: anchore/scan-action@v4
+        id: scan
+        with:
+          image: ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
 
       # Step 9: Push the Docker image to Docker Hub
       - name: Push the Docker image to Docker Hub
