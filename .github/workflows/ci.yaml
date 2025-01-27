@@ -62,8 +62,13 @@ jobs:
       - name: Build the Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0 .
+
+      # Step 9: Test Docker image
+      - name: Install Trivy
+        run: |
+          curl -sfl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
       
-      # Step 9: Push the Docker image to Docker Hub
+      # Step 10: Push the Docker image to Docker Hub
       - name: Push the Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
