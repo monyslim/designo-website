@@ -13,16 +13,21 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
-      - name: Install http-server locally
-        run: npm install http-server
-
-      - name: Start HTTP server
+      - name: Install http-server
         run: |
-          nohup ./node_modules/.bin/http-server . -p 80 &
+          sudo apt-get update
+          sudo apt-get install -y http-server
+
+      - name: Start HTTP server on port 80
+        run: |
+          nohup http-server . -p 80 &
+          ps aux | grep http-server
+
+      - name: Wait for server to start
+        run: sleep 10
 
       - name: Check if app is accessible using curl
         run: |
-          sleep 5
           curl -f http://localhost:80/index.html > result.log || echo "App not accessible" > result.log
 
       - name: Upload test report
