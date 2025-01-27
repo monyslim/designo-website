@@ -13,22 +13,30 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
-      - name: Install http-server
+      - name: Install Nginx
         run: |
           sudo apt-get update
-          sudo apt-get install -y http-server
+          sudo apt-get install -y nginx
+          sudo systemctl start nginx
+          sudo systemctl enable nginx
 
-      - name: Start HTTP server on port 80
+      - name: Copy files to Nginx's root directory
         run: |
-          nohup http-server . -p 80 &
-          ps aux | grep http-server
-
-      - name: Wait for server to start
-        run: sleep 10
+          #!/bin/bash
+          sudo chmod -R 777 /var/www
+          sudo chown -R $USER:$USER /var/www
+          cd /var/www
+          sudo rm -rf html
+          sudo mkdir html
+          cd html
+          sudo cp -r * /var/www/html
+          sudo systemctl restart nginx
+          sleep 5
 
       - name: Check if app is accessible using curl
         run: |
           curl -f http://localhost:80/index.html > result.log || echo "App not accessible" > result.log
+
 
       - name: Upload test report
         uses: actions/upload-artifact@v3
