@@ -76,13 +76,14 @@ jobs:
       
       - name: Scan the Docker image
         run: |
-          trivy image --format html --output trivy-scan-report.html ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
-
+            trivy image --format json --output trivy-scan-report.json ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+        
       - name: Upload Trivy report
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
-          path: trivy-scan-report.html
+          path: trivy-scan-report.json
+
       - name: Push the Docker image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
