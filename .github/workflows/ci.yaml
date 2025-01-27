@@ -67,10 +67,21 @@ jobs:
       - name: Install Trivy
         run: |
           curl -sfl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+          sudo mv trivy /usr/local/bin
+
+      - name: Verify Trivy installation
+        run: |
+          trivy --version
       
       - name: Scan the Docker image
         run: |
           trivy image ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+
+      - name: Upload Trivy report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-scan-report.html
       
       # Step 10: Push the Docker image to Docker Hub
       - name: Push the Docker image to Docker Hub
