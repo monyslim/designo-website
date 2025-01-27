@@ -13,12 +13,15 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
-      - name: Install http-server
-        run: npm install -g http-server
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install http-server locally
+        run: npm install http-server
 
       - name: Start HTTP server
         run: |
-          nohup http-server . -p 80 &
+          nohup ./node_modules/.bin/http-server . -p 80 &
 
       - name: Check if app is accessible using curl
         run: |
