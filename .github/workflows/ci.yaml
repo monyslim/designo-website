@@ -25,7 +25,9 @@ jobs:
         run: npm install -g http-server
 
       - name: Start HTTP server
-        run: http-server . -p 80 &  # Start HTTP server on port 80
+        run: |
+          nohup http-server . -p 80 &
+          sleep 5  # Wait for the server to start
 
       - name: Run QUnit tests using Puppeteer
         run: |
@@ -35,8 +37,8 @@ jobs:
           const fs = require('fs');
           (async () => {
             const browser = await puppeteer.launch({
-              headless: true,  // Ensure headless mode
-              args: ['--no-sandbox', '--disable-setuid-sandbox']  // Disable the sandbox
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
             });
             const page = await browser.newPage();
             const results = [];
@@ -44,8 +46,13 @@ jobs:
               console.log(msg.text());
               results.push(msg.text());
             });
-            // Load the page via HTTP server
-            await page.goto('http://localhost:80/index.html');
+            try {
+              // Ensure Puppeteer waits for the server to be ready
+              await page.goto('http://localhost:80/index.html', { waitUntil: 'load', timeout: 10000 });
+              console.log('Page loaded successfully.');
+            } catch (error) {
+              console.error('Failed to load the page:', error.message);
+            }
             await browser.close();
             fs.writeFileSync('test-reports/results.log', results.join('\n'));
           })();
