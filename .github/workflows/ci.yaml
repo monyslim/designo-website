@@ -66,8 +66,10 @@ jobs:
       # Step 9: Test Docker image
       - name: Install Trivy
         run: |
-          curl -sfl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+          curl -sfl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -x
           sudo mv ./trivy /usr/local/bin/trivy
+          # Ensure it's executable
+          sudo chmod +x /usr/local/bin/trivy
 
       - name: Verify Trivy installation
         run: |
