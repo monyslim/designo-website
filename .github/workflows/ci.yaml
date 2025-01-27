@@ -27,6 +27,7 @@ jobs:
         run: npm install puppeteer
 
       # Step 4: Run QUnit tests using Puppeteer
+      # Step 4: Run QUnit tests using Puppeteer
       - name: Run QUnit tests
         run: |
           mkdir -p test-reports
@@ -34,7 +35,9 @@ jobs:
           const puppeteer = require('puppeteer');
           const fs = require('fs');
           (async () => {
-            const browser = await puppeteer.launch();
+            const browser = await puppeteer.launch({
+              args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            });
             const page = await browser.newPage();
             page.on('console', (msg) => console.log(msg.text()));
             const results = [];
@@ -44,6 +47,7 @@ jobs:
             fs.writeFileSync('test-reports/results.log', results.join('\\n'));
           })();
           EOF
+
 
       # Step 5: Upload the test report as an artifact
       - name: Upload test report
