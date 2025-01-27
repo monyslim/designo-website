@@ -1,7 +1,5 @@
-# Workflow Name
 name: CI
 
-# Define when to trigger the workflow
 on:
   push:
     branches:
@@ -12,49 +10,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Check out the code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 3: Install dependencies
-      - name: Install Puppeteer
-        run: npm install puppeteer
+      - name: Install dependencies
+        run: npm install
 
-      # Step 4: Run QUnit tests using Puppeteer
-      # Step 4: Run QUnit tests using Puppeteer
-      - name: Run QUnit tests
+      - name: Install http-server
+        run: npm install -g http-server
+
+      - name: Start HTTP server
+        run: http-server . -p 80 &  # Start HTTP server on port 80
+
+      - name: Run QUnit tests using Puppeteer
         run: |
           mkdir -p test-reports
-          node <<EOF
+          node << 'RUN_TESTS'
           const puppeteer = require('puppeteer');
           const fs = require('fs');
           (async () => {
             const browser = await puppeteer.launch({
-              args: ['--no-sandbox', '--disable-setuid-sandbox'],
+              headless: true,  // Ensure headless mode
+              args: ['--no-sandbox', '--disable-setuid-sandbox']  // Disable the sandbox
             });
             const page = await browser.newPage();
-            page.on('console', (msg) => console.log(msg.text()));
             const results = [];
-            page.on('console', (msg) => results.push(msg.text()));
-            await page.goto('file://$(pwd)/index.html');
+            page.on('console', (msg) => {
+              console.log(msg.text());
+              results.push(msg.text());
+            });
+            // Load the page via HTTP server
+            await page.goto('http://localhost:80/index.html');
             await browser.close();
-            fs.writeFileSync('test-reports/results.log', results.join('\\n'));
+            fs.writeFileSync('test-reports/results.log', results.join('\n'));
           })();
-          EOF
+          RUN_TESTS
 
-
-      # Step 5: Upload the test report as an artifact
       - name: Upload test report
         uses: actions/upload-artifact@v3
         with:
-          name: test-results
+          name: test-reports
           path: test-reports/results.log
+
 
       # Step 6: Install Docker Engine
       - name: Install Docker Engine
