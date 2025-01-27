@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Install puppeteer
+        run: npm install puppeteer
+
       - name: Install http-server
         run: npm install -g http-server
 
@@ -53,6 +56,7 @@ jobs:
         with:
           name: test-reports
           path: test-reports/results.log
+
 
 
       # Step 6: Install Docker Engine
