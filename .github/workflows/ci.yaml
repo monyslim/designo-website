@@ -22,21 +22,22 @@ jobs:
 
       - name: Copy files to Nginx's root directory
         run: |
-          #!/bin/bash
+          # Ensure permissions and clean up previous HTML directory
           sudo chmod -R 777 /var/www
           sudo chown -R $USER:$USER /var/www
-          cd /var/www
-          sudo rm -rf html
-          sudo mkdir html
-          cd html
-          sudo cp -r * /var/www/html
+          sudo rm -rf /var/www/html
+          sudo mkdir /var/www/html
+
+          # Copy files from the checked-out code to Nginx's root directory
+          cp -r * /var/www/html
+
+          # Restart Nginx to serve the new files
           sudo systemctl restart nginx
           sleep 5
 
       - name: Check if app is accessible using curl
         run: |
           curl -f http://localhost:80/index.html > result.log || echo "App not accessible" > result.log
-
 
       - name: Upload test report
         uses: actions/upload-artifact@v3
